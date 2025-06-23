@@ -1,0 +1,218 @@
+/* ─────────  OPULENTIA DESIGN SYSTEM  ───────── */
+/* Unified by Virgil-inspired minimalism, Denis dark-UI palette, and shadcn/tweakcn implementation */
+
+:root {
+  /* Core Opulentia Tokens */
+  --odl-background: #0F0F0F;
+  --odl-card: #141414;
+  --odl-button: #1B1B1B;
+  --odl-text: #EFEFEF;
+  --odl-sub-text: #C0C0C0;
+  --odl-border: #080808;
+  --odl-accent: #FFAA6E;
+  --odl-danger: #FF4444;
+  --odl-mint-bg: #E5EFE5;
+  
+  /* Soft-Titanium Integration */
+  --titanium-primary: hsl(196.8, 51%, 19.2%);
+  --titanium-secondary: hsl(243.4, 72.1%, 56.5%);
+  
+  /* shadcn Compatibility Layer */
+  --background: var(--odl-background);
+  --foreground: var(--odl-text);
+  --card: var(--odl-card);
+  --card-foreground: var(--odl-text);
+  --primary: var(--odl-button);
+  --primary-foreground: var(--odl-text);
+  --accent: var(--odl-accent);
+  --accent-foreground: #0F0F0F;
+  --border: var(--odl-border);
+  --muted: var(--odl-card);
+  --muted-foreground: var(--odl-sub-text);
+  
+  /* Chart Colors for Data Viz */
+  --chart-1: var(--odl-accent);
+  --chart-2: #FF6B6B;
+  --chart-3: #4ECDC4;
+  --chart-4: #45B7D1;
+  --chart-5: #FFA07A;
+  
+  /* Spacing Tokens */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  
+  /* Radius */
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 20px rgba(255, 170, 110, 0.3);
+  
+  /* Motion */
+  --motion-micro: 120ms ease-out;
+  --motion-macro: cubic-bezier(0.33, 1, 0.68, 1);
+  --motion-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Dark mode (same values retained for override flexibility) */
+.dark {
+  --background: var(--odl-background);
+  --foreground: var(--odl-text);
+  --card: var(--odl-card);
+  --primary: var(--odl-button);
+  --accent: var(--odl-accent);
+}
+
+/* Typography Utilities */
+.odl-hero {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.odl-h1 {
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.odl-h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.odl-body {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.odl-caption {
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+}
+
+/* Quote Accent System */
+[data-quote]::before {
+  content: '"';
+  color: var(--odl-accent);
+}
+
+[data-quote]::after {
+  content: '"';
+  color: var(--odl-accent);
+}
+
+/* Quantum Browser Specific */
+.quantum-glow {
+  box-shadow: 0 0 40px rgba(255, 170, 110, 0.3), 
+              0 0 80px rgba(255, 170, 110, 0.1);
+}
+
+.kinesthetic-layer {
+  background: radial-gradient(circle at center, 
+    rgba(255, 170, 110, 0.1), 
+    transparent
+  );
+}
+
+/* Component Overrides */
+.odl-button {
+  @apply inline-flex items-center justify-center rounded-[var(--radius)] 
+         font-semibold transition-all duration-[var(--motion-micro)]
+         focus-visible:outline-none focus-visible:ring-2 
+         focus-visible:ring-[var(--odl-accent)] focus-visible:ring-offset-2
+         focus-visible:ring-offset-[var(--odl-background)];
+}
+
+.odl-button-default {
+  @apply odl-button bg-[var(--odl-button)] text-[var(--odl-text)] 
+         hover:bg-[var(--odl-card)] hover:shadow-md;
+}
+
+.odl-button-accent {
+  @apply odl-button bg-[var(--odl-accent)] text-[var(--odl-background)] 
+         hover:opacity-90 hover:shadow-glow;
+}
+
+.odl-button-ghost {
+  @apply odl-button bg-transparent text-[var(--odl-text)] 
+         hover:bg-[var(--odl-card)];
+}
+
+.odl-card {
+  @apply bg-[var(--odl-card)] text-[var(--odl-text)] 
+         rounded-[var(--radius)] p-6 
+         shadow-sm border border-[var(--odl-border)]
+         transition-all duration-[var(--motion-micro)];
+}
+
+.odl-input {
+  @apply bg-[var(--odl-button)] border border-[var(--odl-border)] 
+         text-[var(--odl-text)] placeholder-[var(--odl-sub-text)] 
+         rounded-[var(--radius)] px-4 py-3
+         focus:outline-none focus:ring-2 focus:ring-[var(--odl-accent)]
+         focus:border-transparent transition-all duration-[var(--motion-micro)];
+}
+
+/* Grid System */
+.odl-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.odl-grid-desktop {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.odl-grid-mobile {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Motion Classes */
+.odl-transition-micro {
+  transition: all var(--motion-micro);
+}
+
+.odl-transition-macro {
+  transition: all 300ms var(--motion-macro);
+}
+
+.odl-transition-spring {
+  transition: all 400ms var(--motion-spring);
+}
+
+/* Quantum Browser Enhancements */
+@keyframes quantum-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes kinesthetic-flow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 3s ease-in-out infinite;
+}
+
+.kinesthetic-flow {
+  animation: kinesthetic-flow 3s linear infinite;
+}
+
+/* Runtime Theme Injection Support */
+.tweakcn-injected {
+  /* Placeholder for runtime CSS variable injection */
+}
