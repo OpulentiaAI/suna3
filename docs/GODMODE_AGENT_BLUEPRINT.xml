@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://godmode.agent/spec/v1" xmlns="https://godmode.agent/spec/v1" elementFormDefault="qualified">
+  <xs:element name="AgentKnowledgeBase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="AgentProfile" type="AgentProfileType"/>
+        <xs:element name="CognitiveArchitecture" type="CognitiveArchitectureType"/>
+        <xs:element name="KnowledgeRepresentation" type="KnowledgeRepresentationType"/>
+        <xs:element name="GovernanceFramework" type="GovernanceFrameworkType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="AgentProfileType">
+    <xs:sequence>
+      <xs:element name="ID" type="xs:string" doc="Unique identifier for the agent instance."/>
+      <xs:element name="Name" type="xs:string" doc="Human-readable name of the agent."/>
+      <xs:element name="Version" type="xs:string" doc="Version of the agent's configuration."/>
+      <xs:element name="PrimaryObjective" type="xs:string" doc="High-level mission statement or goal for the agent."/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CognitiveArchitectureType">
+    <xs:sequence>
+      <xs:element name="LLMCore" doc="Specifies the core Large Language Model.">
+        <xs:complexType>
+          <xs:attribute name="modelProvider" type="xs:string" use="required" doc="e.g., OpenAI, Anthropic, Google"/>
+          <xs:attribute name="modelName" type="xs:string" use="required" doc="e.g., gpt-4o, claude-3-5-sonnet-latest"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="MemorySystem" type="MemorySystemType"/>
+      <xs:element name="DecisionLoop" type="DecisionLoopType"/>
+      <xs:element name="MetaController" type="MetaControllerType"/>
+      <xs:element name="LearningMechanism" type="LearningMechanismType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MemorySystemType">
+    <xs:sequence>
+      <xs:element name="WorkingMemory">
+        <xs:complexType>
+          <xs:attribute name="type" type="xs:string" fixed="ContextWindow"/>
+          <xs:attribute name="maxSize" type="xs:positiveInteger" doc="Maximum tokens in the context window."/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="LongTermMemory">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="EpisodicMemory" doc="Stores agent experiences.">
+              <xs:complexType>
+                <xs:attribute name="type" type="xs:string" use="required" doc="e.g., Zep, Mem0"/>
+                <xs:attribute name="apiEndpoint" type="xs:anyURI" use="required"/>
+                <xs:attribute name="apiKey" type="xs:string" use="required"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="SemanticMemory" doc="Stores factual knowledge via RAG.">
+              <xs:complexType>
+                <xs:attribute name="type" type="xs:string" fixed="RAG"/>
+                <xs:attribute name="vectorDB" type="xs:string" use="required" doc="e.g., Pinecone, Milvus"/>
+                <xs:attribute name="retrievalModel" type="xs:string" use="required" doc="Embedding model to use."/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ProceduralMemory">
+              <xs:complexType>
+                <xs:attribute name="ref" type="xs:string" fixed="ToolCatalog" doc="Reference to the defined tool catalog."/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DecisionLoopType">
+    <xs:sequence>
+      <xs:element name="Planner">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="DecompositionStrategy" type="xs:string" doc="e.g., 'Recursive', 'ChainOfThought'"/>
+          </xs:sequence>
+          <xs:attribute name="type" type="xs:string" fixed="Hierarchical"/>
+          <xs:attribute name="maxDepth" type="xs:positiveInteger" default="5"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Executor">
+        <xs:complexType>
+          <xs:attribute name="ref" type="xs:string" fixed="ExecutionEnvironment"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Validator">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Constraint" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="check" use="required">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="pre_action"/>
+                      <xs:enumeration value="post_action"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="rule" type="xs:string" use="required"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="type" type="xs:string" fixed="Symbolic"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" fixed="PlanExecuteValidate"/>
+  </xs:complexType>
+  <xs:complexType name="MetaControllerType">
+    <xs:sequence>
+      <xs:element name="StrategySelectionPolicy" type="xs:string" doc="Policy for choosing the reasoning strategy."/>
+      <xs:element name="ToolSelectionPolicy" type="xs:string" doc="Policy for selecting tools."/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="LearningMechanismType">
+    <xs:sequence>
+      <xs:element name="Algorithm">
+        <xs:complexType>
+          <xs:attribute name="type" type="xs:string" fixed="Hybrid_EWC_Replay"/>
+          <xs:attribute name="stability_lambda" type="xs:float" doc="Weighting factor for EWC penalty."/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ReplayBuffer">
+        <xs:complexType>
+          <xs:attribute name="source" type="xs:string" fixed="EpisodicMemory"/>
+          <xs:attribute name="strategy" type="xs:string" doc="e.g., 'PrioritizedExperienceReplay'"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" fixed="ContinualLearning"/>
+  </xs:complexType>
+  <xs:complexType name="KnowledgeRepresentationType">
+    <xs:sequence>
+      <xs:element name="EntitySchema" type="SchemaDefinitionType" doc="Defines the structure for entities."/>
+      <xs:element name="RelationSchema" type="SchemaDefinitionType" doc="Defines the structure for relationships."/>
+      <xs:element name="FactSchema" type="SchemaDefinitionType" doc="Defines the structure for facts."/>
+      <xs:element name="GoalSchema" type="SchemaDefinitionType" doc="Defines the structure for goals."/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SchemaDefinitionType">
+    <xs:sequence>
+      <xs:element name="Field" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+          <xs:attribute name="type" type="xs:string" use="required"/>
+          <xs:attribute name="required" type="xs:boolean" default="false"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GovernanceFrameworkType">
+    <xs:sequence>
+      <xs:element name="ExecutionEnvironment">
+        <xs:complexType>
+          <xs:attribute name="type" type="xs:string" use="required" doc="e.g., E2B_Sandbox, Daytona"/>
+          <xs:attribute name="templateID" type="xs:string" doc="ID for the sandbox template."/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ToolCatalog" type="ToolCatalogType"/>
+      <xs:element name="EthicalCore" type="EthicalCoreType"/>
+      <xs:element name="OversightPolicy" type="OversightPolicyType"/>
+      <xs:element name="Observability" type="ObservabilityType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ToolCatalogType">
+    <xs:sequence>
+      <xs:element name="Tool" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="APIDefinition">
+              <xs:complexType>
+                <xs:attribute name="endpoint" type="xs:anyURI" use="required"/>
+                <xs:attribute name="method" use="required">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="GET"/>
+                      <xs:enumeration value="POST"/>
+                      <xs:enumeration value="PUT"/>
+                      <xs:enumeration value="DELETE"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="Parameters" type="SchemaDefinitionType" minOccurs="0"/>
+            <xs:element name="Permissions" type="xs:string" doc="e.g., 'read-only', 'read-write'"/>
+            <xs:element name="CostPerCall" type="xs:decimal"/>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+          <xs:attribute name="category" type="xs:string" use="required" doc="e.g., WebInteraction, CodeExecution, DataRetrieval"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EthicalCoreType">
+    <xs:sequence>
+      <xs:element name="HardConstraint" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="description" type="xs:string" use="required"/>
+          <xs:attribute name="rule" type="xs:string" use="required" doc="A formal rule to be enforced by the Validator."/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OversightPolicyType">
+    <xs:sequence>
+      <xs:element name="HumanInTheLoop" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="trigger_condition" type="xs:string" use="required" doc="Condition that triggers HITL review."/>
+          <xs:attribute name="approval_level" type="xs:string" use="required" doc="Required level of human approval."/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ObservabilityType">
+    <xs:sequence>
+      <xs:element name="Logging">
+        <xs:complexType>
+          <xs:attribute name="level" default="info">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="verbose"/>
+                <xs:enumeration value="info"/>
+                <xs:enumeration value="warn"/>
+                <xs:enumeration value="error"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="destination" type="xs:anyURI" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
